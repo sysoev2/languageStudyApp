@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, ForeignKey
 from sqlalchemy.orm import relationship
 from src.Entity.Base import Base
-from .User import User
 
 
 class Card(Base):
