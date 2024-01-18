@@ -7,7 +7,7 @@ import bcrypt
 
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String, unique=True)
@@ -22,7 +22,4 @@ class User(Base):
 
     @password.setter
     def password(self, password):
-        self._password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(12))
-
-
-
+        self._password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt(12))

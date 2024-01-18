@@ -2,15 +2,16 @@ import tkinter as tk
 from tkinter import ttk
 from src.View.Frame.Login import LoginFrame
 from src.View.Frame.Registration import RegisterFrame
+from src.View.Frame.CardGroup import CardGroup
 from index.database import Database
 from src.Entity.User import User
 from sqlalchemy.orm import Session
 
 # -------------------------- DEFINING GLOBAL VARIABLES -------------------------
 
-selectionbar_color = '#eff5f6'
-sidebar_color = '#F5E1FD'
-header_color = '#53366b'
+selectionbar_color = "#eff5f6"
+sidebar_color = "#F5E1FD"
+header_color = "#53366b"
 visualisation_frame_color = "#ffffff"
 
 
@@ -40,7 +41,7 @@ class TkinterApp(tk.Tk):
 
         self.geometry("1100x700")
         self.resizable(0, 0)
-        self.title('Attendance Tracking System')
+        self.title("Attendance Tracking System")
         self.config(background=selectionbar_color)
 
         # ---------------- HEADER ------------------------
@@ -57,26 +58,27 @@ class TkinterApp(tk.Tk):
         self.brand_frame = tk.Frame(self.sidebar, bg=sidebar_color)
         self.brand_frame.place(relx=0, rely=0, relwidth=1, relheight=0.15)
 
-        uni_name = tk.Label(self.brand_frame,
-                            text='Anki cards',
-                            bg=sidebar_color,
-                            font=("", 15, "bold")
-                            )
+        uni_name = tk.Label(
+            self.brand_frame, text="Anki cards", bg=sidebar_color, font=("", 15, "bold")
+        )
         uni_name.place(x=55, y=60, anchor="w")
 
         # SUBMENUS IN SIDE BAR
 
         # # SUBMENU 1
         self.submenu_frame = tk.Frame(self.sidebar, bg=sidebar_color)
-        self.submenu_frame.place(relx=0, rely=0.2, relwidth=1, relheight=1)
-        submenu1 = Sidebar(self.submenu_frame,
-                           sub_menu_heading='SUBMENU 1',
-                           sub_menu_options=["Display Frame1",
-                                             "Display Frame2",
-                                             "Display Login",
-                                             "Display Register"
-                                             ]
-                           )
+        self.submenu_frame.place(relx=0, rely=0.2, relwidth=1, relheight=2)
+        submenu1 = Sidebar(
+            self.submenu_frame,
+            sub_menu_heading="SUBMENU 1",
+            sub_menu_options=[
+                "Display Frame1",
+                "Display Frame2",
+                "Display Login",
+                "Display Register",
+                "Display Card Group",
+            ],
+        )
         submenu1.options["Display Frame1"].config(
             command=lambda: self.show_frame(Frame1)
         )
@@ -89,6 +91,9 @@ class TkinterApp(tk.Tk):
         submenu1.options["Display Register"].config(
             command=lambda: self.show_frame(RegisterFrame)
         )
+        submenu1.options["Display Card Group"].config(
+            command=lambda: self.show_frame(CardGroup)
+        )
 
         submenu1.place(relx=0, rely=0.025, relwidth=1, relheight=0.3)
 
@@ -100,7 +105,7 @@ class TkinterApp(tk.Tk):
 
         self.frames = {}
 
-        for F in (Frame1, Frame2, LoginFrame, RegisterFrame):
+        for F in (Frame1, Frame2, LoginFrame, RegisterFrame, CardGroup):
             frame = F(container, self)
             self.frames[F] = frame
             frame.place(relx=0, rely=0, relwidth=1, relheight=1)
@@ -119,6 +124,7 @@ class TkinterApp(tk.Tk):
         None
         """
         frame = self.frames[cont]
+        frame.load_data()
         frame.tkraise()
 
     def get_user(self) -> None | User:
@@ -138,7 +144,7 @@ class Frame1(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        label = tk.Label(self, text='Frame 1', font=("Arial", 15))
+        label = tk.Label(self, text="Frame 1", font=("Arial", 15))
         label.pack()
 
 
@@ -146,7 +152,7 @@ class Frame2(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        label = tk.Label(self, text='Frame 2', font=("Arial", 15))
+        label = tk.Label(self, text="Frame 2", font=("Arial", 15))
         label.pack()
 
 
@@ -164,27 +170,29 @@ class Sidebar(tk.Frame):
         """
         tk.Frame.__init__(self, parent)
         self.config(bg=sidebar_color)
-        self.sub_menu_heading_label = tk.Label(self,
-                                               text=sub_menu_heading,
-                                               bg=sidebar_color,
-                                               fg="#333333",
-                                               font=("Arial", 10)
-                                               )
+        self.sub_menu_heading_label = tk.Label(
+            self,
+            text=sub_menu_heading,
+            bg=sidebar_color,
+            fg="#333333",
+            font=("Arial", 10),
+        )
         self.sub_menu_heading_label.place(x=30, y=10, anchor="w")
 
-        sub_menu_sep = ttk.Separator(self, orient='horizontal')
+        sub_menu_sep = ttk.Separator(self, orient="horizontal")
         sub_menu_sep.place(x=30, y=30, relwidth=0.8, anchor="w")
 
         self.options = {}
         for n, x in enumerate(sub_menu_options):
-            self.options[x] = tk.Button(self,
-                                        text=x,
-                                        bg=sidebar_color,
-                                        font=("Arial", 9, "bold"),
-                                        bd=0,
-                                        cursor='hand2',
-                                        activebackground='#ffffff',
-                                        )
+            self.options[x] = tk.Button(
+                self,
+                text=x,
+                bg=sidebar_color,
+                font=("Arial", 9, "bold"),
+                bd=0,
+                cursor="hand2",
+                activebackground="#ffffff",
+            )
             self.options[x].place(x=30, y=45 * (n + 1), anchor="w")
 
 
