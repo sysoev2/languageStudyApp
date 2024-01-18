@@ -42,7 +42,7 @@ class CardGroup(BasePage):
         selected = self.groups.curselection()
 
         if selected:
-            group = self.__repository.get_by_id(self.items[selected[0]])
+            group = self.items[selected[0]]
             group.name = self.entry.get()
             self.groups.delete(selected[0])
             self.groups.insert(selected[0], self.entry.get())
