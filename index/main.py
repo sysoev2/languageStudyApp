@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+
+from src.View.Frame.AddCard import AddCard
 from src.View.Frame.Login import LoginFrame
 from src.View.Frame.Registration import RegisterFrame
 from src.View.Frame.CardGroup import CardGroup
@@ -77,6 +79,7 @@ class TkinterApp(tk.Tk):
                 "Display Login",
                 "Display Register",
                 "Display Card Group",
+                "Display Add Card",
             ],
         )
         submenu1.options["Display Frame1"].config(
@@ -94,6 +97,9 @@ class TkinterApp(tk.Tk):
         submenu1.options["Display Card Group"].config(
             command=lambda: self.show_frame(CardGroup)
         )
+        submenu1.options["Display Add Card"].config(
+            command=lambda: self.show_frame(AddCard)
+        )
 
         submenu1.place(relx=0, rely=0.025, relwidth=1, relheight=0.3)
 
@@ -105,7 +111,7 @@ class TkinterApp(tk.Tk):
 
         self.frames = {}
 
-        for F in (Frame1, Frame2, LoginFrame, RegisterFrame, CardGroup):
+        for F in (Frame1, Frame2, LoginFrame, RegisterFrame, CardGroup, AddCard):
             frame = F(container, self)
             self.frames[F] = frame
             frame.place(relx=0, rely=0, relwidth=1, relheight=1)
