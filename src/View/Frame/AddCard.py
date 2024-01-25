@@ -33,6 +33,7 @@ class AddCard(BasePage):
             front_text=self.front_text.get(),
             back_text=self.back_text.get(),
             author=self.controller.get_user(),
+            card_group=self.groups[self.card_groups.current()],
         )
         self.front_text.delete(0, tk.END)
         self.back_text.delete(0, tk.END)

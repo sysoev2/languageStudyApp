@@ -1,48 +1,52 @@
 from abc import ABC
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 from index.database import Database
 from src.Entity.Base import Base
+from typing import Any
 
 
 class BaseRepository(ABC):
-    __session: Session
+    _session: Session
     entity_class = None
 
     def __init__(self):
-        self.__session = Database().get_session()
+        self._session = Database().get_session()
 
     def create(self, **kwargs) -> None:
         entity = self.entity_class(**kwargs)
-        self.__session.add(entity)
-        self.__session.commit()
-        self.__session.refresh(entity)
+        self._session.add(entity)
+        self._session.commit()
+        self._session.refresh(entity)
         return entity
 
     def save(self) -> None:
-        self.__session.commit()
+        self._session.commit()
 
     def delete(self, entity: Base) -> None:
-        self.__session.delete(entity)
-        self.__session.commit()
+        self._session.delete(entity)
+        self._session.commit()
 
     def get_all(self) -> list[Base]:
-        return self.__session.query(self.entity_class).all()
+        return self._get_query_builder().all()
 
-    def get_by_id(self, entity_id) -> Base | None:
+    def get_by_id(self, entity_id: int) -> Base | None:
         return (
-            self.__session.query(self.entity_class)
+            self._get_query_builder()
             .filter(self.entity_class.id == entity_id)
             .one_or_none()
         )
 
-    def get_all_by(self, **kwargs) -> list[Base]:
-        query = self.__session.query(self.entity_class)
+    def get_all_by(self, **kwargs: dict[str, Any]) -> list[Base]:
+        query = self._get_query_builder()
         for attr, value in kwargs.items():
             query = query.filter(getattr(self.entity_class, attr) == value)
         return query.all()
 
-    def get_one_by(self, **kwargs) -> Base | None:
-        query = self.__session.query(self.entity_class)
+    def get_one_by(self, **kwargs: dict[str, Any]) -> Base | None:
+        query = self._get_query_builder()
         for attr, value in kwargs.items():
             query = query.filter(getattr(self.entity_class, attr) == value)
         return query.one_or_none()
+
+    def _get_query_builder(self) -> Query:
+        return self._session.query(self.entity_class)

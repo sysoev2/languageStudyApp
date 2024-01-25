@@ -5,6 +5,7 @@ from src.View.Frame.AddCard import AddCard
 from src.View.Frame.Login import LoginFrame
 from src.View.Frame.Registration import RegisterFrame
 from src.View.Frame.CardGroup import CardGroup
+from src.View.Frame.StudyingPage import StudyingPage
 from index.database import Database
 from src.Entity.User import User
 from sqlalchemy.orm import Session
@@ -80,6 +81,7 @@ class TkinterApp(tk.Tk):
                 "Display Register",
                 "Display Card Group",
                 "Display Add Card",
+                "Test",
             ],
         )
         submenu1.options["Display Frame1"].config(
@@ -100,6 +102,7 @@ class TkinterApp(tk.Tk):
         submenu1.options["Display Add Card"].config(
             command=lambda: self.show_frame(AddCard)
         )
+        submenu1.options["Test"].config(command=lambda: self.show_frame(StudyingPage))
 
         submenu1.place(relx=0, rely=0.025, relwidth=1, relheight=0.3)
 
@@ -111,13 +114,21 @@ class TkinterApp(tk.Tk):
 
         self.frames = {}
 
-        for F in (Frame1, Frame2, LoginFrame, RegisterFrame, CardGroup, AddCard):
+        for F in (
+            Frame1,
+            Frame2,
+            LoginFrame,
+            RegisterFrame,
+            CardGroup,
+            AddCard,
+            StudyingPage,
+        ):
             frame = F(container, self)
             self.frames[F] = frame
             frame.place(relx=0, rely=0, relwidth=1, relheight=1)
         self.show_frame(LoginFrame)
 
-    def show_frame(self, cont):
+    def show_frame(self, cont, **kwargs):
         """
         The function 'show_frame' is used to raise a specific frame (page) in
         the tkinter application and update the title displayed in the header.
@@ -129,9 +140,10 @@ class TkinterApp(tk.Tk):
         Returns:
         None
         """
+        print(kwargs)
         frame = self.frames[cont]
-        frame.load_data()
         frame.tkraise()
+        frame.load_data(**kwargs)
 
     def get_user(self) -> None | User:
         return self.__user

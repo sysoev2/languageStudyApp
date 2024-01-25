@@ -1,6 +1,7 @@
 import tkinter as tk
 from src.Repository.CardGroupRepository import CardGroupRepository
 from .BasePage import BasePage
+from .StudyingPage import StudyingPage
 
 
 class CardGroup(BasePage):
@@ -28,6 +29,9 @@ class CardGroup(BasePage):
         edit_button = tk.Button(self, text="Edit Item", command=self.edit_item)
         edit_button.pack(side=tk.LEFT)
 
+        edit_button = tk.Button(self, text="Study", command=self.start_learning)
+        edit_button.pack(side=tk.LEFT)
+
     def add_item(self) -> None:
         self.__repository.create(name=self.entry.get(), user=self.controller.get_user())
         self.groups.insert(tk.END, self.entry.get())
@@ -48,9 +52,14 @@ class CardGroup(BasePage):
             self.groups.insert(selected[0], self.entry.get())
             self.__repository.save()
 
-    def load_data(self) -> None:
+    def load_data(self, **kwargs) -> None:
         self.groups.delete(0, tk.END)
         self.items = []
         for group in self.__repository.get_all_by(user=self.controller.get_user()):
             self.items.append(group)
             self.groups.insert(group.id, group.name)
+
+    def start_learning(self):
+        self.controller.show_frame(
+            StudyingPage, group_id=self.items[self.groups.curselection()[0]].id
+        )

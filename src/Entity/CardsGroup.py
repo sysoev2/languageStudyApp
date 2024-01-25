@@ -24,12 +24,4 @@ class CardsGroup(Base):
 
     # Define the relationship with User
     user = relationship("User")
-    cards = relationship(
-        "Card",
-        secondary=Table(
-            "cards_cards_group",
-            Base.metadata,
-            Column("card_id", ForeignKey("card.id")),
-            Column("card_group_id", ForeignKey("cards_group.id")),
-        ),
-    )
+    cards = relationship("Card", back_populates="card_group")

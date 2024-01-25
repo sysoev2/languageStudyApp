@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from src.Entity.Base import Base
 
 
 class SingletonMeta(type):
@@ -16,9 +17,6 @@ class SingletonMeta(type):
 
 
 class Database(metaclass=SingletonMeta):
-    # Base class for our models
-    Base = declarative_base()
-
     def __init__(self):
         """
         Initializes the database engine.
@@ -39,4 +37,4 @@ class Database(metaclass=SingletonMeta):
         """
         Creates tables in the database based on defined models.
         """
-        self.Base.metadata.create_all(self.engine)
+        Base.metadata.create_all(self.engine)
