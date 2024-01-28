@@ -11,7 +11,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String, unique=True)
-    _password = Column(String)
+    _password = Column(String, name="password")
 
     # Define the relationship with Post
     cards = relationship("Card", back_populates="author")

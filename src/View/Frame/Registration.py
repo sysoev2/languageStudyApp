@@ -6,8 +6,7 @@ from src.View.Component.Input import Input
 
 class RegisterFrame(BasePage):
     def __init__(self, parent, controller):
-        BasePage.__init__(self, parent)
-        self.controller = controller
+        super().__init__(parent, controller)
 
         label = tk.Label(self, text="Register", font=("Arial", 15))
         label.pack(pady=10)
@@ -27,7 +26,7 @@ class RegisterFrame(BasePage):
         login_button = tk.Button(
             self,
             text="Back to Login",
-            command=self.show_login,
+            command=self.redirect_to_login,
         )
         login_button.pack()
 
@@ -44,6 +43,6 @@ class RegisterFrame(BasePage):
         self.password.clear()
         self.password_repeat.clear()
 
-    def show_login(self) -> None:
+    def redirect_to_login(self) -> None:
         self.controller.show_login()
         self.clear_inputs()

@@ -1,8 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
+from typing import Type
 
 from src.Observer.UserLoginObserver import UserLoginObserver
 from src.View.Frame.AddCard import AddCard
+from src.View.Frame.BasePage import BasePage
 from src.View.Frame.Login import LoginFrame
 from src.View.Frame.Registration import RegisterFrame
 from src.View.Frame.CardGroup import CardGroup
@@ -66,7 +68,7 @@ class TkinterApp(tk.Tk, AbstractObservable):
         self.submenu_frame.place(relx=0, rely=0.2, relwidth=1, relheight=2)
         self.submenu1 = Sidebar(
             self.submenu_frame,
-            sub_menu_heading="SUBMENU 1",
+            sub_menu_heading="Menu",
             sub_menu_options=["Display Card Group", "Display Add Card", "Logout"],
         )
         self.submenu1.options["Display Card Group"].config(
@@ -85,6 +87,7 @@ class TkinterApp(tk.Tk, AbstractObservable):
 
         self.frames = {}
 
+        F: Type[BasePage]
         for F in (
             LoginFrame,
             RegisterFrame,

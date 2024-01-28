@@ -10,8 +10,7 @@ class AddCard(BasePage):
     groups = []
 
     def __init__(self, parent, controller):
-        BasePage.__init__(self, parent)
-        self.controller = controller
+        super().__init__(parent, controller)
 
         label = tk.Label(self, text="Add Card", font=("Arial", 15))
         label.pack(pady=10)

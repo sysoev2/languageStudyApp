@@ -10,7 +10,7 @@ class StudyingPage(BasePage):
     current_card: Card
 
     def __init__(self, parent, controller):
-        BasePage.__init__(self, parent)
+        super().__init__(parent, controller)
         self.controller = controller
 
         label = tk.Label(self, text="Studying", font=("Arial", 15))

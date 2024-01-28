@@ -2,6 +2,7 @@ from abc import ABC
 from multipledispatch import dispatch
 from sqlalchemy.orm import Session, Query
 from index.database import Database
+from src.Entity.Base import Base
 from typing import Any, TypeVar, Generic, List
 
 T = TypeVar("T")
@@ -24,7 +25,7 @@ class BaseRepository(ABC, Generic[T]):
     def save(self) -> None:
         self._session.commit()
 
-    @dispatch(T)
+    @dispatch(Base)
     def delete(self, entity: T) -> None:
         self._session.delete(entity)
         self._session.commit()
