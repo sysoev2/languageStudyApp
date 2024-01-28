@@ -33,7 +33,6 @@ class StudyingPage(BasePage):
         self.show_answer_button = tk.Button(
             self, text="Show Answer", command=self.show_action_buttons
         )
-        self.show_answer_button.pack(anchor=tk.CENTER)
 
     def answer(self, memory: bool):
         if memory:
@@ -80,4 +79,4 @@ class StudyingPage(BasePage):
     def hide_action_buttons(self):
         self.dont_remember_button.pack_forget()
         self.good_remember_button.pack_forget()
-        self.show_answer_button.pack(anchor=tk.CENTER)
+        self.show_answer_button.pack()

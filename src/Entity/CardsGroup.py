@@ -25,3 +25,6 @@ class CardsGroup(Base):
     # Define the relationship with User
     user = relationship("User")
     cards = relationship("Card", back_populates="card_group")
+
+    def get_active_cards(self) -> list[Card]:
+        return [card for card in self.cards if card.next_review_after < datetime.now()]

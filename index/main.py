@@ -75,26 +75,9 @@ class TkinterApp(tk.Tk):
             self.submenu_frame,
             sub_menu_heading="SUBMENU 1",
             sub_menu_options=[
-                "Display Frame1",
-                "Display Frame2",
-                "Display Login",
-                "Display Register",
                 "Display Card Group",
                 "Display Add Card",
-                "Test",
             ],
-        )
-        submenu1.options["Display Frame1"].config(
-            command=lambda: self.show_frame(Frame1)
-        )
-        submenu1.options["Display Frame2"].config(
-            command=lambda: self.show_frame(Frame2)
-        )
-        submenu1.options["Display Login"].config(
-            command=lambda: self.show_frame(LoginFrame)
-        )
-        submenu1.options["Display Register"].config(
-            command=lambda: self.show_frame(RegisterFrame)
         )
         submenu1.options["Display Card Group"].config(
             command=lambda: self.show_frame(CardGroup)
@@ -102,8 +85,6 @@ class TkinterApp(tk.Tk):
         submenu1.options["Display Add Card"].config(
             command=lambda: self.show_frame(AddCard)
         )
-        submenu1.options["Test"].config(command=lambda: self.show_frame(StudyingPage))
-
         submenu1.place(relx=0, rely=0.025, relwidth=1, relheight=0.3)
 
         # --------------------  MULTI PAGE SETTINGS ----------------------------
@@ -115,8 +96,6 @@ class TkinterApp(tk.Tk):
         self.frames = {}
 
         for F in (
-            Frame1,
-            Frame2,
             LoginFrame,
             RegisterFrame,
             CardGroup,
@@ -156,24 +135,6 @@ class TkinterApp(tk.Tk):
 
 
 # ------------------------ MULTIPAGE FRAMES ------------------------------------
-
-
-class Frame1(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-
-        label = tk.Label(self, text="Frame 1", font=("Arial", 15))
-        label.pack()
-
-
-class Frame2(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-
-        label = tk.Label(self, text="Frame 2", font=("Arial", 15))
-        label.pack()
-
-
 class Sidebar(tk.Frame):
     """
     A submenu which can have multiple options and these can be linked with

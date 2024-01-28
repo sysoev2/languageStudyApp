@@ -1,8 +1,10 @@
 from abc import ABC
+
+from multipledispatch import dispatch
 from sqlalchemy.orm import Session, Query
 from index.database import Database
 from src.Entity.Base import Base
-from typing import Any
+from typing import Any, overload
 
 
 class BaseRepository(ABC):
@@ -22,8 +24,14 @@ class BaseRepository(ABC):
     def save(self) -> None:
         self._session.commit()
 
+    @dispatch(Base)
     def delete(self, entity: Base) -> None:
         self._session.delete(entity)
+        self._session.commit()
+
+    @dispatch(int)
+    def delete(self, entity_id: int) -> None:
+        self._get_query_builder().filter_by(id=entity_id).delete()
         self._session.commit()
 
     def get_all(self) -> list[Base]:
