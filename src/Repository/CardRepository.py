@@ -7,9 +7,7 @@ from sqlalchemy.orm.query import Query
 from sqlalchemy import and_
 
 
-class CardRepository(BaseRepository):
-    MAX_CARDS_PER_GAME = 20
-
+class CardRepository(BaseRepository[Card]):
     def __init__(self):
         super().__init__()
         self.entity_class = Card
