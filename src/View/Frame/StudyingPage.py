@@ -46,10 +46,8 @@ class StudyingPage(BasePage):
         self.current_card = self.cards.pop()
         self.show_card()
 
-    def load_data(self, **kwargs) -> None:
-        self.cards = self.__repository.get_cards_to_study_by_group_name(
-            kwargs.get("group_id")
-        )
+    def load_data(self, group_id: int, **kwargs) -> None:
+        self.cards = self.__repository.get_cards_to_study_by_group_name(group_id)
         if len(self.cards) == 0:
             self.end_game()
             return
@@ -66,9 +64,7 @@ class StudyingPage(BasePage):
             self.end_game()
 
     def end_game(self):
-        from .CardGroup import CardGroup
-
-        self.controller.show_frame(CardGroup)
+        self.controller.show_card_group()
 
     def show_action_buttons(self):
         self.dont_remember_button.pack(side=tk.LEFT)

@@ -3,9 +3,8 @@ from tkinter import ttk
 from src.Repository.CardGroupRepository import CardGroupRepository
 from src.Repository.CardRepository import CardRepository
 from .BasePage import BasePage
-from .StudyingPage import StudyingPage
 from .CardGroupModalAction import ModalWindow
-import tkinter.messagebox as tkmb
+import tkinter.messagebox as messagebox
 
 
 class CardGroup(BasePage):
@@ -82,9 +81,9 @@ class CardGroup(BasePage):
     def start_learning(self, event=None) -> None:
         selected_item = self.tree.focus()
         if selected_item and int(self.tree.item(selected_item, "values")[1]) > 0:
-            self.controller.show_frame(StudyingPage, group_id=int(selected_item))
+            self.controller.show_studying_page(int(selected_item))
             return
-        tkmb.showerror(
+        messagebox.showerror(
             "Error",
             "No active cards available for this group at the moment. Cards will become available again over "
             "time. Please check back later.",

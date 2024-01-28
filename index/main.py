@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+from src.Observer.UserLoginObserver import UserLoginObserver
 from src.View.Frame.AddCard import AddCard
 from src.View.Frame.Login import LoginFrame
 from src.View.Frame.Registration import RegisterFrame
@@ -9,6 +10,7 @@ from src.View.Frame.StudyingPage import StudyingPage
 from index.database import Database
 from src.Entity.User import User
 from sqlalchemy.orm import Session
+from src.Observable.AbstractObservable import AbstractObservable
 
 # -------------------------- DEFINING GLOBAL VARIABLES -------------------------
 
@@ -21,23 +23,16 @@ visualisation_frame_color = "#ffffff"
 # ------------------------------- ROOT WINDOW ----------------------------------
 
 
-class TkinterApp(tk.Tk):
-    __user: User
+class TkinterApp(tk.Tk, AbstractObservable):
+    __user: User | None
     __session: Session
 
-    """
-     The class creates a header and sidebar for the application. Also creates
-     two submenus in the sidebar, one for attendance overview with options to
-     track students and modules, view poor attendance and another for
-     database management, with options to update and add new modules to the
-     database.
-    """
-
     def __init__(self):
+        tk.Tk.__init__(self)
+        AbstractObservable.__init__(self)
         database = Database()
         database.create_tables()
         self.__session = database.get_session()
-        tk.Tk.__init__(self)
         self.title("Anki card application")
 
         # ------------- BASIC APP LAYOUT -----------------
@@ -67,25 +62,20 @@ class TkinterApp(tk.Tk):
         uni_name.place(x=55, y=60, anchor="w")
 
         # SUBMENUS IN SIDE BAR
-
-        # # SUBMENU 1
         self.submenu_frame = tk.Frame(self.sidebar, bg=sidebar_color)
         self.submenu_frame.place(relx=0, rely=0.2, relwidth=1, relheight=2)
-        submenu1 = Sidebar(
+        self.submenu1 = Sidebar(
             self.submenu_frame,
             sub_menu_heading="SUBMENU 1",
-            sub_menu_options=[
-                "Display Card Group",
-                "Display Add Card",
-            ],
+            sub_menu_options=["Display Card Group", "Display Add Card", "Logout"],
         )
-        submenu1.options["Display Card Group"].config(
-            command=lambda: self.show_frame(CardGroup)
+        self.submenu1.options["Display Card Group"].config(
+            command=lambda: self.show_card_group()
         )
-        submenu1.options["Display Add Card"].config(
-            command=lambda: self.show_frame(AddCard)
+        self.submenu1.options["Display Add Card"].config(
+            command=lambda: self.show_add_card()
         )
-        submenu1.place(relx=0, rely=0.025, relwidth=1, relheight=0.3)
+        self.submenu1.options["Logout"].config(command=lambda: self.logout())
 
         # --------------------  MULTI PAGE SETTINGS ----------------------------
 
@@ -105,48 +95,54 @@ class TkinterApp(tk.Tk):
             frame = F(container, self)
             self.frames[F] = frame
             frame.place(relx=0, rely=0, relwidth=1, relheight=1)
-        self.show_frame(LoginFrame)
+        self.show_login()
 
-    def show_frame(self, cont, **kwargs):
-        """
-        The function 'show_frame' is used to raise a specific frame (page) in
-        the tkinter application and update the title displayed in the header.
+    def show_sidebar(self):
+        self.submenu1.place(relx=0, rely=0.025, relwidth=1, relheight=0.3)
 
-        Parameters:
-        cont (str): The name of the frame/page to be displayed.
-        title (str): The title to be displayed in the header of the application.
+    def hide_sidebar(self):
+        self.submenu1.place_forget()
 
-        Returns:
-        None
-        """
-        print(kwargs)
+    def _show_frame(self, cont, **kwargs):
         frame = self.frames[cont]
         frame.tkraise()
         frame.load_data(**kwargs)
+
+    def show_login(self) -> None:
+        self._show_frame(LoginFrame)
+
+    def show_register(self) -> None:
+        self._show_frame(RegisterFrame)
+
+    def show_card_group(self) -> None:
+        self._show_frame(CardGroup)
+
+    def show_add_card(self) -> None:
+        self._show_frame(AddCard)
+
+    def show_studying_page(self, group_id: int) -> None:
+        self._show_frame(StudyingPage, group_id=group_id)
 
     def get_user(self) -> None | User:
         return self.__user
 
     def set_user(self, user: User) -> None:
         self.__user = user
+        self.notify_observers(user=user)
+
+    def logout(self) -> None:
+        self.__user = None
+        self.notify_observers(user=None)
 
     def get_session(self) -> Session:
         return self.__session
 
 
-# ------------------------ MULTIPAGE FRAMES ------------------------------------
-class Sidebar(tk.Frame):
-    """
-    A submenu which can have multiple options and these can be linked with
-    functions.
-    """
+# ------------------------ MULTIPAGE FRAMES AND SIDEBAR ------------------------------------
 
+
+class Sidebar(tk.Frame):
     def __init__(self, parent, sub_menu_heading, sub_menu_options):
-        """
-        parent: The frame where submenu is to be placed
-        sub_menu_heading: Heading for the options provided
-        sub_menu_operations: Options to be included in sub_menu
-        """
         tk.Frame.__init__(self, parent)
         self.config(bg=sidebar_color)
         self.sub_menu_heading_label = tk.Label(
@@ -175,5 +171,10 @@ class Sidebar(tk.Frame):
             self.options[x].place(x=30, y=45 * (n + 1), anchor="w")
 
 
-app = TkinterApp()
-app.mainloop()
+# ------------------------ MAIN APP EXECUTION ------------------------------------
+if __name__ == "__main__":
+    app = TkinterApp()
+
+    app.add_observer(UserLoginObserver())
+
+    app.mainloop()
