@@ -14,6 +14,7 @@ class AbstractObservable(ABC):
     def remove_observer(self, observer: AbstractObserver) -> None:
         self.__observers.remove(observer)
 
-    def notify_observers(self, *args, **kwargs) -> None:
+    def notify_observers(self, event: str, *args, **kwargs) -> None:
         for observer in self.__observers:
-            observer.update(self, *args, **kwargs)
+            if observer.EVENT_NAME == event:
+                observer.update(self, *args, **kwargs)

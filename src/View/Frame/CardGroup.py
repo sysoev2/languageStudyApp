@@ -70,7 +70,7 @@ class CardGroup(BasePage):
                 tk.END,
                 values=(
                     group.name,
-                    self.__card_repository.get_cards_to_study_by_group_name_count(
+                    self.__card_repository.get_cards_to_study_by_group_id_count(
                         group.id
                     ),
                 ),

@@ -22,6 +22,9 @@ class BaseRepository(ABC, Generic[T]):
         self._session.refresh(entity)
         return entity
 
+    def persist(self, entity: T) -> None:
+        self._session.add(entity)
+
     def save(self) -> None:
         self._session.commit()
 

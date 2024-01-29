@@ -3,6 +3,7 @@ from tkinter import ttk
 from typing import Type
 
 from src.Observer.UserLoginObserver import UserLoginObserver
+from src.Observer.CardAnswerObserver import CardAnswerObserver
 from src.View.Frame.AddCard import AddCard
 from src.View.Frame.BasePage import BasePage
 from src.View.Frame.Login import LoginFrame
@@ -131,11 +132,11 @@ class TkinterApp(tk.Tk, AbstractObservable):
 
     def set_user(self, user: User) -> None:
         self.__user = user
-        self.notify_observers(user=user)
+        self.notify_observers(UserLoginObserver.EVENT_NAME, user=user)
 
     def logout(self) -> None:
         self.__user = None
-        self.notify_observers(user=None)
+        self.notify_observers(UserLoginObserver.EVENT_NAME, user=None)
 
     def get_session(self) -> Session:
         return self.__session
@@ -179,5 +180,6 @@ if __name__ == "__main__":
     app = TkinterApp()
 
     app.add_observer(UserLoginObserver())
+    app.add_observer(CardAnswerObserver())
 
     app.mainloop()

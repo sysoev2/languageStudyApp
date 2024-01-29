@@ -2,6 +2,7 @@ import tkinter as tk
 from src.Repository.CardRepository import CardRepository
 from src.Entity.Card import Card
 from .BasePage import BasePage
+from src.Observer.CardAnswerObserver import CardAnswerObserver
 
 
 class StudyingPage(BasePage):
@@ -35,6 +36,9 @@ class StudyingPage(BasePage):
         )
 
     def answer(self, memory: bool):
+        self.controller.notify_observers(
+            CardAnswerObserver.EVENT_NAME, card=self.current_card, answer=int(memory)
+        )
         if memory:
             self.current_card.reviewed()
             self.__repository.save()
@@ -47,7 +51,7 @@ class StudyingPage(BasePage):
         self.show_card()
 
     def load_data(self, group_id: int, **kwargs) -> None:
-        self.cards = self.__repository.get_cards_to_study_by_group_name(group_id)
+        self.cards = self.__repository.get_cards_to_study_by_group_id(group_id)
         if len(self.cards) == 0:
             self.end_game()
             return
