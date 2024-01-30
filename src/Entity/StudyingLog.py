@@ -28,5 +28,6 @@ class StudyingLog(Base):
         nullable=False,
     )
     answer = Column(Integer, nullable=False)
+    repeat_interval = Column(Integer, nullable=False, default=0)
 
     card = relationship("Card")

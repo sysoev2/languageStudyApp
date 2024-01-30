@@ -8,5 +8,11 @@ class CardAnswerObserver(AbstractObserver):
 
     def update(self, observable, *args, **kwargs):
         repository = StudyingLogRepository()
-        repository.persist(StudyingLog(card=kwargs["card"], answer=kwargs["answer"]))
+        repository.persist(
+            StudyingLog(
+                card=kwargs["card"],
+                answer=kwargs["answer"],
+                repeat_interval=kwargs["repeat_interval"],
+            )
+        )
         repository.save()

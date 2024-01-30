@@ -6,6 +6,7 @@ from src.Entity.Card import Card
 from .BasePage import BasePage
 from src.Observer.CardAnswerObserver import CardAnswerObserver
 from supermemo2 import SMTwo
+from src.Enum.CardComplexity import CardComplexity
 
 
 class StudyingPage(BasePage):
@@ -27,17 +28,25 @@ class StudyingPage(BasePage):
         self.back_text.pack()
 
         self.again_button = tk.Button(
-            self, text="Again", command=lambda: self.answer(1)
+            self, text="Again", command=lambda: self.answer(CardComplexity.Again.value)
         )
 
-        self.bad_button = tk.Button(self, text="Bad", command=lambda: self.answer(2))
+        self.bad_button = tk.Button(
+            self, text="Bad", command=lambda: self.answer(CardComplexity.Bad.value)
+        )
 
-        self.good_button = tk.Button(self, text="Good", command=lambda: self.answer(3))
+        self.good_button = tk.Button(
+            self, text="Good", command=lambda: self.answer(CardComplexity.Good.value)
+        )
 
-        self.easy_button = tk.Button(self, text="Easy", command=lambda: self.answer(4))
+        self.easy_button = tk.Button(
+            self, text="Easy", command=lambda: self.answer(CardComplexity.Easy.value)
+        )
 
         self.perfect_button = tk.Button(
-            self, text="Perfect", command=lambda: self.answer(5)
+            self,
+            text="Perfect",
+            command=lambda: self.answer(CardComplexity.Perfect.value),
         )
 
         self.show_answer_button = tk.Button(
@@ -60,7 +69,10 @@ class StudyingPage(BasePage):
         self.current_card.ease = sm.easiness
         self.__repository.save()
         self.controller.notify_observers(
-            CardAnswerObserver.EVENT_NAME, card=self.current_card, answer=int(memory)
+            CardAnswerObserver.EVENT_NAME,
+            card=self.current_card,
+            answer=int(memory),
+            repeat_interval=sm.interval if sm.repetitions else 0,
         )
         if len(self.cards) == 0:
             self.end_game()

@@ -4,6 +4,7 @@ from typing import Type
 
 from src.Observer.UserLoginObserver import UserLoginObserver
 from src.Observer.CardAnswerObserver import CardAnswerObserver
+from src.View.Frame.StudyingHistory import StudyingHistory
 from src.View.Frame.AddCard import AddCard
 from src.View.Frame.BasePage import BasePage
 from src.View.Frame.Login import LoginFrame
@@ -70,13 +71,21 @@ class TkinterApp(tk.Tk, AbstractObservable):
         self.submenu1 = Sidebar(
             self.submenu_frame,
             sub_menu_heading="Menu",
-            sub_menu_options=["Display Card Group", "Display Add Card", "Logout"],
+            sub_menu_options=[
+                "Display Card Group",
+                "Display Add Card",
+                "Studying Log",
+                "Logout",
+            ],
         )
         self.submenu1.options["Display Card Group"].config(
             command=lambda: self.show_card_group()
         )
         self.submenu1.options["Display Add Card"].config(
             command=lambda: self.show_add_card()
+        )
+        self.submenu1.options["Studying Log"].config(
+            command=lambda: self.show_studying_history()
         )
         self.submenu1.options["Logout"].config(command=lambda: self.logout())
 
@@ -95,6 +104,7 @@ class TkinterApp(tk.Tk, AbstractObservable):
             CardGroup,
             AddCard,
             StudyingPage,
+            StudyingHistory,
         ):
             frame = F(container, self)
             self.frames[F] = frame
@@ -123,6 +133,9 @@ class TkinterApp(tk.Tk, AbstractObservable):
 
     def show_add_card(self) -> None:
         self._show_frame(AddCard)
+
+    def show_studying_history(self) -> None:
+        self._show_frame(StudyingHistory)
 
     def show_studying_page(self, group_id: int) -> None:
         self._show_frame(StudyingPage, group_id=group_id)
