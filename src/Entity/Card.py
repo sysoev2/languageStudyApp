@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 from datetime import datetime, timedelta
-from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, ForeignKey, REAL
 from sqlalchemy.orm import relationship
 from src.Entity.Base import Base
 from datetime import datetime
@@ -20,10 +20,11 @@ class Card(Base):
     next_review_after = Column(
         TIMESTAMP,
         server_default="CURRENT_TIMESTAMP",
-        default=datetime.now(),
+        default=lambda: datetime.now(),
         nullable=False,
     )
-    ease = Column(Integer, default=2)
+    last_reviewed_at = Column(TIMESTAMP, default=lambda: datetime.now())
+    ease = Column(REAL, default=2.5)
     review_count = Column(Integer, default=0)
     created_by = Column(Integer, ForeignKey("user.id"))
     card_group_id = Column(Integer, ForeignKey("cards_group.id"))
