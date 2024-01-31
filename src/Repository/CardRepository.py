@@ -44,3 +44,6 @@ class CardRepository(BaseRepository[Card]):
 
     def get_cards_to_study_by_group_id_count(self, group_id: int) -> int:
         return self._get_cards_to_study_by_group_id_qb(group_id).count()
+
+    def get_cards_by_group_id(self, group_id: int) -> list[Card]:
+        return self._get_query_builder().where(Card.card_group_id == group_id).all()

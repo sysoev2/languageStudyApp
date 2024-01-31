@@ -3,6 +3,9 @@ from src.Repository.CardRepository import CardRepository
 from src.Repository.CardGroupRepository import CardGroupRepository
 from .BasePage import BasePage
 from tkinter import ttk
+from src.Entity.Card import Card
+from src.Validator.EntityValidator.CardValidator import CardValidator
+from ...Validator.ValidatorErrorsHelper import ValidatorErrorsHelper
 
 
 class AddCard(BasePage):
@@ -21,19 +24,26 @@ class AddCard(BasePage):
         self.back_text = tk.Entry(self)
         self.back_text.pack()
 
-        self.card_groups = ttk.Combobox(self)
+        self.card_groups = ttk.Combobox(self, state="readonly")
         self.card_groups.pack()
 
         add_button = tk.Button(self, text="Add Card", command=self.add_item)
         add_button.pack(side=tk.LEFT, padx=(0, 10))
 
     def add_item(self) -> None:
-        self.__repository.create(
+        if self.card_groups.current() < 0:
+            ValidatorErrorsHelper.show_errors({"Card group": "Please select a group"})
+            return
+        card = Card(
             front_text=self.front_text.get(),
             back_text=self.back_text.get(),
             author=self.controller.get_user(),
             card_group=self.groups[self.card_groups.current()],
         )
+        if not self.validate_card(card):
+            return
+        self.__repository.persist(card)
+        self.__repository.save()
         self.front_text.delete(0, tk.END)
         self.back_text.delete(0, tk.END)
 
@@ -44,3 +54,11 @@ class AddCard(BasePage):
             self.groups.append(group)
             values.append(group.name)
         self.card_groups["values"] = values
+        if values:
+            self.card_groups.current(0)
+
+    def validate_card(self, card: Card) -> bool:
+        errors = CardValidator().validate(card)
+        if errors is not True:
+            ValidatorErrorsHelper.show_errors(errors)
+            return False

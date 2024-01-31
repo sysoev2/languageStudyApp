@@ -7,6 +7,10 @@ from .BasePage import BasePage
 from .CardModalAction import CardModalAction
 import tkinter.messagebox as messagebox
 
+from ...Entity import Card
+from ...Validator.EntityValidator.CardValidator import CardValidator
+from ...Validator.ValidatorErrorsHelper import ValidatorErrorsHelper
+
 
 class CardList(BasePage):
     __card_repository = CardRepository()
@@ -43,18 +47,21 @@ class CardList(BasePage):
 
     def add_item(self) -> None:
         modal = CardModalAction(self, title="Add Card")
-        if modal.result:
-            card = self.__card_repository.create(
-                front_text=modal.result["front"],
-                back_text=modal.result["back"],
-                author=self.controller.get_user(),
-                card_group_id=self.group_id,
-            )
-            self.tree.insert(
-                "",
-                tk.END,
-                values=(card.front_text, card.back_text, card.next_review_after),
-            )
+        card = Card(
+            front_text=modal.result["front"],
+            back_text=modal.result["back"],
+            author=self.controller.get_user(),
+            card_group_id=self.group_id,
+        )
+        if not self.validate_card(card):
+            return
+        self.__card_repository.persist(card)
+        self.__card_repository.save()
+        self.tree.insert(
+            "",
+            tk.END,
+            values=(card.front_text, card.back_text, card.next_review_after),
+        )
 
     def edit_item(self, event=None) -> None:
         selected_item = self.tree.focus()
@@ -65,12 +72,16 @@ class CardList(BasePage):
                 title="Edit Card",
                 initial_value={"front": card.front_text, "back": card.back_text},
             )
-            if modal.result:
-                card.front_text = modal.result["front"]
-                card.back_text = modal.result["back"]
-
-                self.__card_repository.save()
-                self.tree.item(selected_item, values=(card.front_text, card.back_text))
+            old_front = card.front_text
+            old_back = card.back_text
+            card.front_text = modal.result["front"]
+            card.back_text = modal.result["back"]
+            if not self.validate_card(card):
+                card.front_text = old_front
+                card.back_text = old_back
+                return
+            self.__card_repository.save()
+            self.tree.item(selected_item, values=(card.front_text, card.back_text))
 
     def load_data(self, group_id: int, **kwargs) -> None:
         self.group_id = group_id
@@ -79,9 +90,7 @@ class CardList(BasePage):
     def load_cards(self) -> None:
         for i in self.tree.get_children():
             self.tree.delete(i)
-        for card in self.__card_repository.get_cards_to_study_by_group_id(
-            self.group_id
-        ):
+        for card in self.__card_repository.get_cards_by_group_id(self.group_id):
             self.tree.insert(
                 "",
                 tk.END,
@@ -98,3 +107,10 @@ class CardList(BasePage):
             y = self.tree.winfo_rooty() + event.y
 
             self.popup_menu.post(x, y)
+
+    def validate_card(self, card: Card) -> bool:
+        errors = CardValidator().validate(card)
+        if errors:
+            ValidatorErrorsHelper.show_errors(errors)
+            return False
+        return True

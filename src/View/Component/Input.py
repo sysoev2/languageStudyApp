@@ -52,3 +52,8 @@ class Input(tk.Entry):
     def clear(self):
         self.delete(0, tk.END)
         self.put_placeholder()
+
+    def get(self):
+        if self["fg"] == self.placeholder_color:
+            return ""
+        return super().get()

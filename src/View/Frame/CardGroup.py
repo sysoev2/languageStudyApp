@@ -5,6 +5,9 @@ from src.Repository.CardRepository import CardRepository
 from .BasePage import BasePage
 from .CardGroupModalAction import ModalWindow
 import tkinter.messagebox as messagebox
+from src.Entity.CardsGroup import CardsGroup
+from ...Validator.EntityValidator.CardGroupValidator import CardGroupValidator
+from ...Validator.ValidatorErrorsHelper import ValidatorErrorsHelper
 
 
 class CardGroup(BasePage):
@@ -43,24 +46,28 @@ class CardGroup(BasePage):
 
     def add_item(self) -> None:
         modal = ModalWindow(self, title="Add Card Group")
-        if modal.result:
-            group = self.__repository.create(
-                name=modal.result, user=self.controller.get_user()
-            )
-            self.tree.insert("", tk.END, values=(group.name, 0))
+        group = CardsGroup(name=modal.result, user=self.controller.get_user())
+        if not self.validate_cards_group(group):
+            return
+        self.__repository.persist(group)
+        self.__repository.save()
+        self.tree.insert("", tk.END, values=(group.name, 0))
 
     def edit_item(self, event=None) -> None:
         selected_item = self.tree.focus()
         if selected_item:
             group = self.__repository.get_by_id(int(selected_item))
             modal = ModalWindow(self, title="Edit Card Group", initial_value=group.name)
-            if modal.result:
-                group.name = modal.result
-                self.__repository.save()
-                self.tree.item(
-                    selected_item,
-                    values=(group.name, self.tree.item(selected_item, "values")[1]),
-                )
+            old_name = group.name
+            group.name = modal.result
+            if not self.validate_cards_group(group):
+                group.name = old_name
+                return
+            self.__repository.save()
+            self.tree.item(
+                selected_item,
+                values=(group.name, self.tree.item(selected_item, "values")[1]),
+            )
 
     def load_data(self, **kwargs) -> None:
         for i in self.tree.get_children():
@@ -104,3 +111,10 @@ class CardGroup(BasePage):
         selected_item = self.tree.focus()
         if selected_item:
             self.controller.show_card_list(int(selected_item))
+
+    def validate_cards_group(self, card_group: CardsGroup) -> bool:
+        errors = CardGroupValidator().validate(card_group)
+        if errors is not True:
+            ValidatorErrorsHelper.show_errors(errors)
+            return False
+        return True

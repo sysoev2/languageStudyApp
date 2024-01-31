@@ -2,9 +2,15 @@ import tkinter as tk
 from src.Entity.User import User
 from .BasePage import BasePage
 from src.View.Component.Input import Input
+from ...DTO.UserDTO import UserDTO
+from ...Repository.UserRepository import UserRepository
+from ...Validator.EntityValidator.UserDTOValidator import UserDTOValidator
+from ...Validator.ValidatorErrorsHelper import ValidatorErrorsHelper
 
 
 class RegisterFrame(BasePage):
+    __repository = UserRepository()
+
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
 
@@ -31,12 +37,25 @@ class RegisterFrame(BasePage):
         login_button.pack()
 
     def register_user(self) -> None:
-        user = User(username=self.username.get(), password=self.password.get())
-        session = self.controller.get_session()
-        session.add(user)
-        session.commit()
+        user = self.save_user()
+        if user is None:
+            return
+
         self.controller.set_user(user)
         self.clear_inputs()
+
+    def save_user(self) -> User | None:
+        dto = UserDTO(
+            username=self.username.get(),
+            password=self.password.get(),
+            password_repeat=self.password_repeat.get(),
+        )
+        if not self.validate_user(dto):
+            return
+        user = User.create_from_dto(dto)
+        self.__repository.persist(user)
+        self.__repository.save()
+        return user
 
     def clear_inputs(self):
         self.username.clear()
@@ -46,3 +65,10 @@ class RegisterFrame(BasePage):
     def redirect_to_login(self) -> None:
         self.controller.show_login()
         self.clear_inputs()
+
+    def validate_user(self, user_dto: UserDTO) -> bool:
+        errors = UserDTOValidator().validate(user_dto)
+        if errors is not True:
+            ValidatorErrorsHelper.show_errors(errors)
+            return False
+        return True

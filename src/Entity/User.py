@@ -5,6 +5,8 @@ from .Card import Card
 from sqlalchemy.ext.hybrid import hybrid_property
 import bcrypt
 
+from ..DTO.UserDTO import UserDTO
+
 
 class User(Base):
     __tablename__ = "user"
@@ -23,3 +25,7 @@ class User(Base):
     @password.setter
     def password(self, password):
         self._password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt(12))
+
+    @staticmethod
+    def create_from_dto(dto: UserDTO) -> "User":
+        return User(username=dto.username, password=dto.password)
