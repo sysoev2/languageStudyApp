@@ -27,6 +27,7 @@ class StudyingLogRepository(BaseRepository[StudyingLog]):
             .join(Card.card_group)
             .filter(StudyingLog.card.has(created_by=user_id))
             .group_by(func.date(StudyingLog.created_at))
+            .order_by(func.date(StudyingLog.created_at).desc())
         ).all()
 
     def get_logs_by_card_group_id_and_date(

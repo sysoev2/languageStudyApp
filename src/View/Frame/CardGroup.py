@@ -24,6 +24,7 @@ class CardGroup(BasePage):
         self.tree.pack()
 
         self.tree.bind("<Button-2>", self.show_popup)
+        self.tree.bind("<Double-1>", self.start_learning)
         self.tree.bind("<Return>", self.start_learning)
 
         add_button = tk.Button(self, text="Add Item", command=self.add_item)
@@ -32,6 +33,7 @@ class CardGroup(BasePage):
         self.popup_menu = tk.Menu(self, tearoff=0)
         self.popup_menu.add_command(label="Edit", command=self.edit_item)
         self.popup_menu.add_command(label="Delete", command=self.delete_item)
+        self.popup_menu.add_command(label="Card list", command=self.show_card_list)
 
     def delete_item(self) -> None:
         selected_item = self.tree.focus()
@@ -54,7 +56,6 @@ class CardGroup(BasePage):
             modal = ModalWindow(self, title="Edit Card Group", initial_value=group.name)
             if modal.result:
                 group.name = modal.result
-                # Update the repository and the treeview item
                 self.__repository.save()
                 self.tree.item(
                     selected_item,
@@ -98,3 +99,8 @@ class CardGroup(BasePage):
             y = self.tree.winfo_rooty() + event.y
 
             self.popup_menu.post(x, y)
+
+    def show_card_list(self):
+        selected_item = self.tree.focus()
+        if selected_item:
+            self.controller.show_card_list(int(selected_item))

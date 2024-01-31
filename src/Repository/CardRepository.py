@@ -9,7 +9,6 @@ from sqlalchemy import and_, between
 
 class CardRepository(BaseRepository[Card]):
     __CARDS_TO_STUDY_PER_DAY_LIMIT = 20
-
     entity_class = Card
 
     def _get_cards_to_study_by_group_id_qb(self, group_id: int) -> Query:
@@ -22,7 +21,7 @@ class CardRepository(BaseRepository[Card]):
                 and_(
                     Card.card_group_id == group_id,
                     between(StudyingLog.created_at, today, tomorrow),
-                    StudyingLog.answer > 0,
+                    StudyingLog.repeat_interval > 0,
                 )
             )
             .count()

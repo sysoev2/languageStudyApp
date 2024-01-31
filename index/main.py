@@ -4,6 +4,7 @@ from typing import Type
 
 from src.Observer.UserLoginObserver import UserLoginObserver
 from src.Observer.CardAnswerObserver import CardAnswerObserver
+from src.View.Frame.CardList import CardList
 from src.View.Frame.StudyingHistory import StudyingHistory
 from src.View.Frame.AddCard import AddCard
 from src.View.Frame.BasePage import BasePage
@@ -105,6 +106,7 @@ class TkinterApp(tk.Tk, AbstractObservable):
             AddCard,
             StudyingPage,
             StudyingHistory,
+            CardList,
         ):
             frame = F(container, self)
             self.frames[F] = frame
@@ -139,6 +141,9 @@ class TkinterApp(tk.Tk, AbstractObservable):
 
     def show_studying_page(self, group_id: int) -> None:
         self._show_frame(StudyingPage, group_id=group_id)
+
+    def show_card_list(self, group_id) -> None:
+        self._show_frame(CardList, group_id=group_id)
 
     def get_user(self) -> None | User:
         return self.__user
