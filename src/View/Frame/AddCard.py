@@ -62,3 +62,4 @@ class AddCard(BasePage):
         if errors is not True:
             ValidatorErrorsHelper.show_errors(errors)
             return False
+        return True
