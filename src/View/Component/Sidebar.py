@@ -43,5 +43,6 @@ class Sidebar(tk.Frame):
                 bd=0,
                 cursor="hand2",
                 activebackground="#ffffff",
+                highlightbackground=sidebar_color,
             )
             self.options[x].place(x=30, y=45 * (n + 1), anchor="w")

@@ -2,8 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 from typing import Type
 
+from src.Entity import CardsGroup
 from src.Observer.UserLoginObserver import UserLoginObserver
 from src.Observer.CardAnswerObserver import CardAnswerObserver
+from src.View.Component.Sidebar import Sidebar
 from src.View.Frame.CardList import CardList
 from src.View.Frame.StudyingHistory import StudyingHistory
 from src.View.Frame.AddCard import AddCard
@@ -38,13 +40,13 @@ class TkinterApp(tk.Tk, AbstractObservable):
         database = Database()
         database.create_tables()
         self.__session = database.get_session()
-        self.title("Anki card application")
+        self.title("Card learning app")
 
         # ------------- BASIC APP LAYOUT -----------------
 
         self.geometry("1100x700")
         self.resizable(0, 0)
-        self.title("Attendance Tracking System")
+        self.title("Card learning app")
         self.config(background=selectionbar_color)
 
         # ---------------- HEADER ------------------------
@@ -62,7 +64,10 @@ class TkinterApp(tk.Tk, AbstractObservable):
         self.brand_frame.place(relx=0, rely=0, relwidth=1, relheight=0.15)
 
         uni_name = tk.Label(
-            self.brand_frame, text="Anki cards", bg=sidebar_color, font=("", 15, "bold")
+            self.brand_frame,
+            text="Card learning app",
+            bg=sidebar_color,
+            font=("", 15, "bold"),
         )
         uni_name.place(x=55, y=60, anchor="w")
 
@@ -142,8 +147,8 @@ class TkinterApp(tk.Tk, AbstractObservable):
     def show_studying_page(self, group_id: int) -> None:
         self._show_frame(StudyingPage, group_id=group_id)
 
-    def show_card_list(self, group_id) -> None:
-        self._show_frame(CardList, group_id=group_id)
+    def show_card_list(self, group: CardsGroup) -> None:
+        self._show_frame(CardList, group=group)
 
     def get_user(self) -> None | User:
         return self.__user
@@ -158,39 +163,6 @@ class TkinterApp(tk.Tk, AbstractObservable):
 
     def get_session(self) -> Session:
         return self.__session
-
-
-# ------------------------ MULTIPAGE FRAMES AND SIDEBAR ------------------------------------
-
-
-class Sidebar(tk.Frame):
-    def __init__(self, parent, sub_menu_heading, sub_menu_options):
-        tk.Frame.__init__(self, parent)
-        self.config(bg=sidebar_color)
-        self.sub_menu_heading_label = tk.Label(
-            self,
-            text=sub_menu_heading,
-            bg=sidebar_color,
-            fg="#333333",
-            font=("Arial", 10),
-        )
-        self.sub_menu_heading_label.place(x=30, y=10, anchor="w")
-
-        sub_menu_sep = ttk.Separator(self, orient="horizontal")
-        sub_menu_sep.place(x=30, y=30, relwidth=0.8, anchor="w")
-
-        self.options = {}
-        for n, x in enumerate(sub_menu_options):
-            self.options[x] = tk.Button(
-                self,
-                text=x,
-                bg=sidebar_color,
-                font=("Arial", 9, "bold"),
-                bd=0,
-                cursor="hand2",
-                activebackground="#ffffff",
-            )
-            self.options[x].place(x=30, y=45 * (n + 1), anchor="w")
 
 
 # ------------------------ MAIN APP EXECUTION ------------------------------------

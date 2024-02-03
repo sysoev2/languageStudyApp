@@ -110,7 +110,9 @@ class CardGroup(BasePage):
     def show_card_list(self):
         selected_item = self.tree.focus()
         if selected_item:
-            self.controller.show_card_list(int(selected_item))
+            self.controller.show_card_list(
+                self.__repository.get_by_id(int(selected_item))
+            )
 
     def validate_cards_group(self, card_group: CardsGroup) -> bool:
         errors = CardGroupValidator().validate(card_group)

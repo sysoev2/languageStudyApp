@@ -7,14 +7,14 @@ from .BasePage import BasePage
 from .CardModalAction import CardModalAction
 import tkinter.messagebox as messagebox
 
-from ...Entity import Card
+from ...Entity import Card, CardsGroup
 from ...Validator.EntityValidator.CardValidator import CardValidator
 from ...Validator.ValidatorErrorsHelper import ValidatorErrorsHelper
 
 
 class CardList(BasePage):
     __card_repository = CardRepository()
-    group_id: int
+    group: CardsGroup
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
@@ -51,7 +51,7 @@ class CardList(BasePage):
             front_text=modal.result["front"],
             back_text=modal.result["back"],
             author=self.controller.get_user(),
-            card_group_id=self.group_id,
+            card_group=self.group,
         )
         if not self.validate_card(card):
             return
@@ -61,6 +61,7 @@ class CardList(BasePage):
             "",
             tk.END,
             values=(card.front_text, card.back_text, card.next_review_after),
+            iid=card.id,
         )
 
     def edit_item(self, event=None) -> None:
@@ -83,14 +84,14 @@ class CardList(BasePage):
             self.__card_repository.save()
             self.tree.item(selected_item, values=(card.front_text, card.back_text))
 
-    def load_data(self, group_id: int, **kwargs) -> None:
-        self.group_id = group_id
+    def load_data(self, group: CardsGroup, **kwargs) -> None:
+        self.group = group
         self.load_cards()
 
     def load_cards(self) -> None:
         for i in self.tree.get_children():
             self.tree.delete(i)
-        for card in self.__card_repository.get_cards_by_group_id(self.group_id):
+        for card in self.__card_repository.get_cards_by_group_id(self.group.id):
             self.tree.insert(
                 "",
                 tk.END,
@@ -101,6 +102,7 @@ class CardList(BasePage):
     def show_popup(self, event):
         row_id = self.tree.identify_row(event.y)
         if row_id:
+            self.tree.focus(row_id)
             self.tree.selection_set(row_id)
 
             x = self.tree.winfo_rootx() + event.x
@@ -110,7 +112,7 @@ class CardList(BasePage):
 
     def validate_card(self, card: Card) -> bool:
         errors = CardValidator().validate(card)
-        if errors:
+        if errors is not True:
             ValidatorErrorsHelper.show_errors(errors)
             return False
         return True

@@ -27,6 +27,7 @@ class Input(tk.Entry):
         self.put_placeholder()
 
     def put_placeholder(self):
+        self.delete("0", "end")
         self.insert(0, self.placeholder)
         self["fg"] = self.placeholder_color
         self["show"] = ""  # Ensure placeholder is visible
