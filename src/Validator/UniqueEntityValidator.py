@@ -3,7 +3,7 @@ import re
 from sqlalchemy.orm import Session
 
 from index.database import Database
-from src.Entity import Base
+from src.Entity.Base import Base
 from src.Validator.Base.Validator import Validator
 
 

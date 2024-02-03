@@ -1,5 +1,5 @@
 from src.DTO.UserDTO import UserDTO
-from src.Entity import User
+from src.Entity.User import User
 from src.Validator.Base.ComplexValidator import ComplexValidator
 from src.Validator.NotBlankValidator import NotBlankValidator
 from src.Validator.RegexValidator import RegexValidator

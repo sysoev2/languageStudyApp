@@ -1,5 +1,5 @@
 from src.DTO.UserDTO import UserDTO
-from src.Entity import Card
+from src.Entity.Card import Card
 from src.Repository.CardRepository import CardRepository
 from src.Validator.Base.ComplexValidator import ComplexValidator
 from src.Validator.Base.Validator import Validator

@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Any
 
-from src.Entity import Card
+from src.Entity.Card import Card
 from src.Validator.Base.Validator import Validator
 
 

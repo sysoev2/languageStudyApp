@@ -1,8 +1,7 @@
 import tkinter as tk
-from tkinter import ttk
 from typing import Type
 
-from src.Entity import CardsGroup
+from src.Entity.CardsGroup import CardsGroup
 from src.Observer.UserLoginObserver import UserLoginObserver
 from src.Observer.CardAnswerObserver import CardAnswerObserver
 from src.View.Component.Sidebar import Sidebar
