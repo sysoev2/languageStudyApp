@@ -49,6 +49,7 @@ class StudyingHistory(BasePage):
 
     def show_session_detail(self, date: str, card_group: str, card_group_id: int):
         detail_window = tk.Toplevel(self)
+        detail_window.grab_set()
         label = tk.Label(detail_window, text=f"Details for {date}, {card_group}")
         tree = ttk.Treeview(
             detail_window,
