@@ -18,40 +18,62 @@ class StudyingPage(BasePage):
         super().__init__(parent, controller)
         self.controller = controller
 
-        label = tk.Label(self, text="Studying", font=("Arial", 15))
-        label.pack(pady=10)
+        # Main layout frame
+        self.main_frame = tk.Frame(self)
+        self.main_frame.pack(expand=True, anchor=tk.CENTER)
 
-        self.front_text = tk.Label(self, height=10, width=40)
-        self.front_text.pack()
+        self.front_text = tk.Label(self.main_frame, height=10, width=40)
+        self.front_text.grid(row=1, column=0, columnspan=5)
 
-        self.back_text = tk.Label(self, height=10, width=40)
-        self.back_text.pack()
+        self.back_text = tk.Label(self.main_frame, height=10, width=40)
+        self.back_text.grid(row=2, column=0, columnspan=5)
 
-        self.again_button = tk.Button(
-            self, text="Again", command=lambda: self.answer(CardComplexity.Again.value)
-        )
+        # Frame to group action buttons
+        self.action_buttons_frame = tk.Frame(self.main_frame)
+        self.action_buttons_frame.grid(row=4, column=0, columnspan=5)
 
-        self.bad_button = tk.Button(
-            self, text="Bad", command=lambda: self.answer(CardComplexity.Bad.value)
-        )
+        # Action buttons using grid layout
+        tk.Button(
+            self.action_buttons_frame,
+            text="Again",
+            command=lambda: self.answer(CardComplexity.Again.value),
+        ).grid(row=0, column=0, padx=5)
 
-        self.good_button = tk.Button(
-            self, text="Good", command=lambda: self.answer(CardComplexity.Good.value)
-        )
+        tk.Button(
+            self.action_buttons_frame,
+            text="Bad",
+            command=lambda: self.answer(CardComplexity.Bad.value),
+        ).grid(row=0, column=1, padx=5)
 
-        self.easy_button = tk.Button(
-            self, text="Easy", command=lambda: self.answer(CardComplexity.Easy.value)
-        )
+        tk.Button(
+            self.action_buttons_frame,
+            text="Good",
+            command=lambda: self.answer(CardComplexity.Good.value),
+        ).grid(row=0, column=2, padx=5)
 
-        self.perfect_button = tk.Button(
-            self,
+        tk.Button(
+            self.action_buttons_frame,
+            text="Easy",
+            command=lambda: self.answer(CardComplexity.Easy.value),
+        ).grid(row=0, column=3, padx=5)
+
+        tk.Button(
+            self.action_buttons_frame,
             text="Perfect",
             command=lambda: self.answer(CardComplexity.Perfect.value),
-        )
+        ).grid(row=0, column=4, padx=5)
+
+        # Frame for show answer button to align using grid
+        self.show_answer_frame = tk.Frame(self.main_frame)
+        self.show_answer_frame.grid(row=3, column=0, columnspan=5)
 
         self.show_answer_button = tk.Button(
-            self, text="Show Answer", command=self.show_action_buttons
+            self.show_answer_frame, text="Show Answer", command=self.show_action_buttons
         )
+        self.show_answer_button.pack()
+
+        # Initially hide the action buttons frame
+        self.action_buttons_frame.grid_remove()
 
     def answer(self, memory: int):
         sm = SMTwo(
@@ -101,18 +123,12 @@ class StudyingPage(BasePage):
         self.controller.show_card_group()
 
     def show_action_buttons(self):
-        self.again_button.pack()
-        self.bad_button.pack()
-        self.good_button.pack()
-        self.easy_button.pack()
-        self.perfect_button.pack()
+        """Show the answer and action buttons, hide the 'Show Answer' button."""
         self.back_text["text"] = self.current_card.back_text
-        self.show_answer_button.pack_forget()
+        self.show_answer_frame.grid_remove()  # Hide 'Show Answer' button frame
+        self.action_buttons_frame.grid()  # Show action buttons frame
 
     def hide_action_buttons(self):
-        self.again_button.pack_forget()
-        self.bad_button.pack_forget()
-        self.good_button.pack_forget()
-        self.easy_button.pack_forget()
-        self.perfect_button.pack_forget()
-        self.show_answer_button.pack()
+        """Hide the action buttons and show the 'Show Answer' button."""
+        self.action_buttons_frame.grid_remove()  # Hide action buttons frame
+        self.show_answer_frame.grid()  # Show 'Show

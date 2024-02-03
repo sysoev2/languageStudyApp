@@ -43,6 +43,6 @@ class StudyingLogRepository(BaseRepository[StudyingLog]):
                 StudyingLog.card.has(card_group_id=card_group_id),
                 func.date(StudyingLog.created_at) == date,
             )
-            .order_by(StudyingLog.created_at.desc())
+            .order_by(StudyingLog.created_at.asc())
             .all()
         )
