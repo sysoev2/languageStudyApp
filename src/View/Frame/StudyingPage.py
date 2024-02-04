@@ -1,5 +1,5 @@
 import tkinter as tk
-from datetime import datetime
+from datetime import datetime, date
 
 from src.Repository.CardRepository import CardRepository
 from src.Entity.Card import Card
@@ -32,36 +32,45 @@ class StudyingPage(BasePage):
         self.action_buttons_frame = tk.Frame(self.main_frame)
         self.action_buttons_frame.grid(row=4, column=0, columnspan=5)
 
-        # Action buttons using grid layout
-        tk.Button(
-            self.action_buttons_frame,
-            text="Again",
-            command=lambda: self.answer(CardComplexity.Again.value),
-        ).grid(row=0, column=0, padx=5)
-
-        tk.Button(
-            self.action_buttons_frame,
-            text="Bad",
-            command=lambda: self.answer(CardComplexity.Bad.value),
-        ).grid(row=0, column=1, padx=5)
-
-        tk.Button(
-            self.action_buttons_frame,
-            text="Good",
-            command=lambda: self.answer(CardComplexity.Good.value),
-        ).grid(row=0, column=2, padx=5)
-
-        tk.Button(
-            self.action_buttons_frame,
-            text="Easy",
-            command=lambda: self.answer(CardComplexity.Easy.value),
-        ).grid(row=0, column=3, padx=5)
-
-        tk.Button(
-            self.action_buttons_frame,
-            text="Perfect",
-            command=lambda: self.answer(CardComplexity.Perfect.value),
-        ).grid(row=0, column=4, padx=5)
+        self.buttons_labels = {e.value: "" for e in CardComplexity}
+        for index, value in enumerate(CardComplexity):
+            frame = tk.Frame(self.action_buttons_frame)
+            tk.Button(
+                frame, text=value.name, command=lambda v=value.value: self.answer(v)
+            ).pack()
+            label = tk.Label(frame)
+            self.buttons_labels[value.value] = label
+            label.pack()
+            frame.grid(row=0, column=index, padx=5)
+        # tk.Button(
+        #     self.action_buttons_frame,
+        #     text="Again",
+        #     command=lambda: self.answer(CardComplexity.Again.value),
+        # ).grid(row=0, column=0, padx=5)
+        #
+        # tk.Button(
+        #     self.action_buttons_frame,
+        #     text="Bad",
+        #     command=lambda: self.answer(CardComplexity.Bad.value),
+        # ).grid(row=0, column=1, padx=5)
+        #
+        # tk.Button(
+        #     self.action_buttons_frame,
+        #     text="Good",
+        #     command=lambda: self.answer(CardComplexity.Good.value),
+        # ).grid(row=0, column=2, padx=5)
+        #
+        # tk.Button(
+        #     self.action_buttons_frame,
+        #     text="Easy",
+        #     command=lambda: self.answer(CardComplexity.Easy.value),
+        # ).grid(row=0, column=3, padx=5)
+        #
+        # tk.Button(
+        #     self.action_buttons_frame,
+        #     text="Perfect",
+        #     command=lambda: self.answer(CardComplexity.Perfect.value),
+        # ).grid(row=0, column=4, padx=5)
 
         # Frame for show answer button to align using grid
         self.show_answer_frame = tk.Frame(self.main_frame)
@@ -72,7 +81,6 @@ class StudyingPage(BasePage):
         )
         self.show_answer_button.pack()
 
-        # Initially hide the action buttons frame
         self.action_buttons_frame.grid_remove()
 
     def answer(self, memory: int):
@@ -123,12 +131,27 @@ class StudyingPage(BasePage):
         self.controller.show_card_group()
 
     def show_action_buttons(self):
-        """Show the answer and action buttons, hide the 'Show Answer' button."""
         self.back_text["text"] = self.current_card.back_text
+        for key in self.buttons_labels:
+            next_repetition = self.estimate_next_review_date(self.current_card, key)
+            if next_repetition == 1:
+                self.buttons_labels.get(key)["text"] = str(next_repetition) + " day"
+            elif next_repetition > 1:
+                self.buttons_labels.get(key)["text"] = str(next_repetition) + " days"
+            else:
+                self.buttons_labels.get(key)["text"] = "Today"
         self.show_answer_frame.grid_remove()  # Hide 'Show Answer' button frame
         self.action_buttons_frame.grid()  # Show action buttons frame
 
     def hide_action_buttons(self):
-        """Hide the action buttons and show the 'Show Answer' button."""
         self.action_buttons_frame.grid_remove()  # Hide action buttons frame
         self.show_answer_frame.grid()  # Show 'Show
+
+    def estimate_next_review_date(self, card: Card, memory: int) -> int:
+        sm = SMTwo(
+            card.ease,
+            (card.last_reviewed_at - datetime.now()).days,
+            card.review_count,
+        ).review(memory)
+        print(sm)
+        return sm.repetitions if sm.interval else 0
