@@ -5,7 +5,8 @@ from .BasePage import BasePage
 from tkinter import ttk
 from src.Entity.Card import Card
 from src.Validator.EntityValidator.CardValidator import CardValidator
-from ...Validator.ValidatorErrorsHelper import ValidatorErrorsHelper
+from src.View.Component.Input import Input
+from src.Validator.ValidatorErrorsHelper import ValidatorErrorsHelper
 
 
 class AddCard(BasePage):
@@ -18,10 +19,10 @@ class AddCard(BasePage):
         label = tk.Label(self, text="Add Card", font=("Arial", 15))
         label.pack(pady=10)
 
-        self.front_text = tk.Entry(self)
+        self.front_text = Input(self, "Front Text")
         self.front_text.pack()
 
-        self.back_text = tk.Entry(self)
+        self.back_text = Input(self, "Back Text")
         self.back_text.pack()
 
         self.card_groups = ttk.Combobox(self, state="readonly")

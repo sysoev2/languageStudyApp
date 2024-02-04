@@ -3,6 +3,7 @@ from src.Repository.UserRepository import UserRepository
 import bcrypt
 from .BasePage import BasePage
 from src.View.Component.Input import Input
+from tkinter import messagebox
 
 
 class LoginFrame(BasePage):
@@ -35,6 +36,8 @@ class LoginFrame(BasePage):
         ):
             self.controller.set_user(user)
             self.clear_inputs()
+        else:
+            messagebox.showerror("Error", "Invalid username or password")
 
     def clear_inputs(self):
         self.username.clear()
