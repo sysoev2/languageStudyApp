@@ -48,7 +48,9 @@ class AddCard(BasePage):
         self.back_text.delete(0, tk.END)
 
     def load_data(self) -> None:
+        self.card_groups.set("")
         self.card_groups["values"] = []
+        self.groups = []
         values = []
         for group in CardGroupRepository().get_all_by(user=self.controller.get_user()):
             self.groups.append(group)

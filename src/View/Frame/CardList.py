@@ -1,15 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
-from src.Repository.CardRepository import (
-    CardRepository,
-)  # Import CardRepository instead of CardGroupRepository
+from src.Repository.CardRepository import CardRepository
 from .BasePage import BasePage
 from .CardModalAction import CardModalAction
 import tkinter.messagebox as messagebox
-
-from ...Entity import Card, CardsGroup
-from ...Validator.EntityValidator.CardValidator import CardValidator
-from ...Validator.ValidatorErrorsHelper import ValidatorErrorsHelper
+from src.Entity.Card import Card
+from src.Entity.CardsGroup import CardsGroup
+from src.Validator.EntityValidator.CardValidator import CardValidator
+from src.Validator.ValidatorErrorsHelper import ValidatorErrorsHelper
 
 
 class CardList(BasePage):

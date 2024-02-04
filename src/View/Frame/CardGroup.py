@@ -100,6 +100,7 @@ class CardGroup(BasePage):
     def show_popup(self, event):
         row_id = self.tree.identify_row(event.y)
         if row_id:
+            self.tree.focus(row_id)
             self.tree.selection_set(row_id)
 
             x = self.tree.winfo_rootx() + event.x

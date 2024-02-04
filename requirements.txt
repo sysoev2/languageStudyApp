@@ -1,0 +1,5 @@
+future~=0.18.3
+bcrypt~=4.1.2
+supermemo2~=2.0.0
+SQLAlchemy~=2.0.25
+multipledispatch~=1.0.0

@@ -3,7 +3,7 @@ from abc import ABC
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from index.main import TkinterApp
+    from main import TkinterApp
 else:
     TkinterApp = "TkinterApp"
 
