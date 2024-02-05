@@ -78,6 +78,6 @@ class CardModalAction(tk.Toplevel):
         self.destroy()  # Close the modal window
 
     def cancel(self, event=None):
-        # Close the modal without setting the result
+        self.result = None
         self.parent.focus_set()  # Return focus to the parent window
         self.destroy()  # Close the modal window

@@ -47,6 +47,8 @@ class CardGroup(BasePage):
 
     def add_item(self) -> None:
         modal = ModalWindow(self, title="Add Card Group")
+        if modal.result is None:
+            return
         group = CardsGroup(name=modal.result, user=self.controller.get_user())
         if not self.validate_cards_group(group):
             return

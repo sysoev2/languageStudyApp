@@ -76,6 +76,7 @@ class ModalWindow(tk.Toplevel):
         self.destroy()  # Close the modal window
 
     def cancel(self, event=None):
+        self.result = None
         # When Cancel is clicked, just close the modal without setting result
         self.parent.focus_set()  # Return focus to the parent window
         self.destroy()  # Close the modal window

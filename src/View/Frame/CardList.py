@@ -45,6 +45,8 @@ class CardList(BasePage):
 
     def add_item(self) -> None:
         modal = CardModalAction(self, title="Add Card")
+        if modal.result is None:
+            return
         card = Card(
             front_text=modal.result["front"],
             back_text=modal.result["back"],
