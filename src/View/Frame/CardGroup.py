@@ -27,6 +27,7 @@ class CardGroup(BasePage):
         self.tree.pack()
 
         self.tree.bind("<Button-2>", self.show_popup)
+        self.tree.bind("<Button-3>", self.show_popup)
         self.tree.bind("<Return>", self.start_learning)
 
         add_button = tk.Button(self, text="Add Item", command=self.add_item)

@@ -42,35 +42,6 @@ class StudyingPage(BasePage):
             self.buttons_labels[value.value] = label
             label.pack()
             frame.grid(row=0, column=index, padx=5)
-        # tk.Button(
-        #     self.action_buttons_frame,
-        #     text="Again",
-        #     command=lambda: self.answer(CardComplexity.Again.value),
-        # ).grid(row=0, column=0, padx=5)
-        #
-        # tk.Button(
-        #     self.action_buttons_frame,
-        #     text="Bad",
-        #     command=lambda: self.answer(CardComplexity.Bad.value),
-        # ).grid(row=0, column=1, padx=5)
-        #
-        # tk.Button(
-        #     self.action_buttons_frame,
-        #     text="Good",
-        #     command=lambda: self.answer(CardComplexity.Good.value),
-        # ).grid(row=0, column=2, padx=5)
-        #
-        # tk.Button(
-        #     self.action_buttons_frame,
-        #     text="Easy",
-        #     command=lambda: self.answer(CardComplexity.Easy.value),
-        # ).grid(row=0, column=3, padx=5)
-        #
-        # tk.Button(
-        #     self.action_buttons_frame,
-        #     text="Perfect",
-        #     command=lambda: self.answer(CardComplexity.Perfect.value),
-        # ).grid(row=0, column=4, padx=5)
 
         # Frame for show answer button to align using grid
         self.show_answer_frame = tk.Frame(self.main_frame)
@@ -153,5 +124,4 @@ class StudyingPage(BasePage):
             (card.last_reviewed_at - datetime.now()).days,
             card.review_count,
         ).review(memory)
-        print(sm)
         return sm.repetitions if sm.interval else 0

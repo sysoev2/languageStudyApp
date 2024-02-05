@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from index.database import Database
 from src.Entity.Base import Base
 from src.Validator.Base.Validator import Validator
+from sqlalchemy import func
 
 
 class UniqueEntityValidator(Validator):
@@ -31,7 +32,12 @@ class UniqueEntityValidator(Validator):
         query = self._session.query(entity_type)
         for field in self.fields:
             value = getattr(model, field)
-            query = query.filter(getattr(entity_type, field) == value)
+            if isinstance(value, str):
+                query = query.filter(
+                    func.lower(getattr(entity_type, field)) == func.lower(value)
+                )
+            else:
+                query = query.filter(getattr(entity_type, field) == value)
         if hasattr(model, "id"):
             query = query.filter(entity_type.id != model.id)
         return True if not query.first() else self.message
