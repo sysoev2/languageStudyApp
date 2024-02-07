@@ -57,7 +57,7 @@ class StudyingPage(BasePage):
     def answer(self, memory: int):
         sm = SMTwo(
             self.current_card.ease,
-            (self.current_card.last_reviewed_at - datetime.now()).days,
+            (datetime.now() - self.current_card.last_reviewed_at).days,
             self.current_card.review_count,
         ).review(memory)
         if not sm.repetitions:
@@ -121,7 +121,7 @@ class StudyingPage(BasePage):
     def estimate_next_review_date(self, card: Card, memory: int) -> int:
         sm = SMTwo(
             card.ease,
-            (card.last_reviewed_at - datetime.now()).days,
+            (datetime.now() - card.last_reviewed_at).days,
             card.review_count,
         ).review(memory)
         return sm.repetitions if sm.interval else 0
