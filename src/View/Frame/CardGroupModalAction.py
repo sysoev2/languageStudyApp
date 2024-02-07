@@ -27,7 +27,7 @@ class ModalWindow(tk.Toplevel):
             self.initial_focus = self
 
         # Handle closing the window
-        self.protocol("WM_DELETE_WINDOW", self.cancel)
+        self.protocol("WM_DELETE_WINDOW", self.__cancel)
 
         # Position the window relative to the parent
         self.geometry("+%d+%d" % (parent.winfo_rootx() + 50, parent.winfo_rooty() + 50))
@@ -57,25 +57,25 @@ class ModalWindow(tk.Toplevel):
 
         # Create OK and Cancel buttons and pack them into the box
         ok_button = tk.Button(
-            box, text="OK", width=10, command=self.ok, default=tk.ACTIVE
+            box, text="OK", width=10, command=self.__ok, default=tk.ACTIVE
         )
         ok_button.pack(side=tk.LEFT, padx=5, pady=5)
-        cancel_button = tk.Button(box, text="Cancel", width=10, command=self.cancel)
+        cancel_button = tk.Button(box, text="Cancel", width=10, command=self.__cancel)
         cancel_button.pack(side=tk.LEFT, padx=5, pady=5)
 
         # Bind the Return key to ok and the Escape key to cancel
-        self.bind("<Return>", self.ok)
-        self.bind("<Escape>", self.cancel)
+        self.bind("<Return>", self.__ok)
+        self.bind("<Escape>", self.__cancel)
 
         box.pack()
 
-    def ok(self, event=None):
+    def __ok(self, event=None):
         # When OK is clicked, set the result to the entry's value and close
         self.result = self.entry.get()
         self.parent.focus_set()  # Return focus to the parent window
         self.destroy()  # Close the modal window
 
-    def cancel(self, event=None):
+    def __cancel(self, event=None):
         self.result = None
         # When Cancel is clicked, just close the modal without setting result
         self.parent.focus_set()  # Return focus to the parent window

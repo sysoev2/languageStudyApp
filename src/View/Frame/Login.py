@@ -21,7 +21,7 @@ class LoginFrame(BasePage):
         self.password = Input(self, "Password", show="*")
         self.password.pack()
 
-        login_button = tk.Button(self, text="Login", command=self.login_user)
+        login_button = tk.Button(self, text="Login", command=self.__login_user)
         login_button.pack()
 
         register_button = tk.Button(
@@ -29,16 +29,16 @@ class LoginFrame(BasePage):
         )
         register_button.pack()
 
-    def login_user(self):
+    def __login_user(self):
         user = self.__repository.get_one_by(username=self.username.get())
         if user is not None and bcrypt.checkpw(
             self.password.get().encode("utf-8"), user.password
         ):
             self.controller.set_user(user)
-            self.clear_inputs()
+            self.__clear_inputs()
         else:
             messagebox.showerror("Error", "Invalid username or password")
 
-    def clear_inputs(self):
+    def __clear_inputs(self):
         self.username.clear()
         self.password.clear()

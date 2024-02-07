@@ -7,14 +7,12 @@ from src.Enum.CardComplexity import CardComplexity
 
 
 class StudyingHistory(BasePage):
-    studying_log_repository: StudyingLogRepository
-    card_group_repository: CardGroupRepository
+    __studying_log_repository: StudyingLogRepository
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
         self.controller = controller
-        self.studying_log_repository = StudyingLogRepository()
-        self.card_group_repository = CardGroupRepository()
+        self.__studying_log_repository = StudyingLogRepository()
 
         self.tree = ttk.Treeview(
             self,
@@ -24,13 +22,13 @@ class StudyingHistory(BasePage):
         self.tree.heading("Date", text="Date")
         self.tree.heading("Card Group", text="Card Group")
         self.tree.heading("Reviewed Cards Count", text="Reviewed Cards Count")
-        self.tree.bind("<Double-1>", self.on_item_double_click)
+        self.tree.bind("<Double-1>", self.__on_item_double_click)
         self.tree.pack(fill=tk.BOTH, expand=True)
 
     def load_data(self, **kwargs) -> None:
         for i in self.tree.get_children():
             self.tree.delete(i)
-        for session in self.studying_log_repository.get_log_group_by_day(
+        for session in self.__studying_log_repository.get_log_group_by_day(
             self.controller.get_user().id
         ):
             self.tree.insert(
@@ -40,14 +38,14 @@ class StudyingHistory(BasePage):
                 iid=None,
             )
 
-    def on_item_double_click(self, event):
+    def __on_item_double_click(self, event):
         item_id = self.tree.selection()[0]
         session_details = self.tree.item(item_id)["values"]
-        self.show_session_detail(
+        self.__show_session_detail(
             session_details[0], session_details[1], session_details[3]
         )
 
-    def show_session_detail(self, date: str, card_group: str, card_group_id: int):
+    def __show_session_detail(self, date: str, card_group: str, card_group_id: int):
         detail_window = tk.Toplevel(self)
         detail_window.grab_set()
         label = tk.Label(detail_window, text=f"Details for {date}, {card_group}")
@@ -62,7 +60,7 @@ class StudyingHistory(BasePage):
         tree.heading("answer", text="Answer")
         tree.heading("next_review_interval", text="Next in (days)")
         tree.pack(fill=tk.BOTH, expand=True)
-        for log in self.studying_log_repository.get_logs_by_card_group_id_and_date(
+        for log in self.__studying_log_repository.get_logs_by_card_group_id_and_date(
             int(card_group_id), date
         ):
             tree.insert(

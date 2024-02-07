@@ -26,44 +26,46 @@ class CardGroup(BasePage):
         self.tree.heading("ActiveCard", text="Active Card")
         self.tree.pack()
 
-        self.tree.bind("<Button-2>", self.show_popup)
-        self.tree.bind("<Button-3>", self.show_popup)
-        self.tree.bind("<Return>", self.start_learning)
+        self.tree.bind("<Button-2>", self.__show_popup)
+        self.tree.bind("<Button-3>", self.__show_popup)
+        self.tree.bind("<Return>", self.__start_learning)
 
-        add_button = tk.Button(self, text="Add Item", command=self.add_item)
+        add_button = tk.Button(self, text="Add Item", command=self.__add_item)
         add_button.pack()
 
         self.popup_menu = tk.Menu(self, tearoff=0)
-        self.popup_menu.add_command(label="Edit", command=self.edit_item)
-        self.popup_menu.add_command(label="Delete", command=self.delete_item)
-        self.popup_menu.add_command(label="Study", command=self.start_learning)
-        self.popup_menu.add_command(label="Card list", command=self.show_card_list)
+        self.popup_menu.add_command(label="Edit", command=self.__edit_item)
+        self.popup_menu.add_command(label="Delete", command=self.__delete_item)
+        self.popup_menu.add_command(label="Study", command=self.__start_learning)
+        self.popup_menu.add_command(label="Card list", command=self.__show_card_list)
 
-    def delete_item(self) -> None:
+    def __delete_item(self) -> None:
         selected_item = self.tree.focus()
         if selected_item:
             self.__repository.delete(int(selected_item))
             self.tree.delete(selected_item)
 
-    def add_item(self) -> None:
+    def __add_item(self) -> None:
         modal = ModalWindow(self, title="Add Card Group")
         if modal.result is None:
             return
         group = CardsGroup(name=modal.result, user=self.controller.get_user())
-        if not self.validate_cards_group(group):
+        if not self.__validate_cards_group(group):
             return
         self.__repository.persist(group)
         self.__repository.save()
-        self.tree.insert("", tk.END, values=(group.name, 0))
+        self.tree.insert("", tk.END, values=(group.name, 0), iid=group.id)
 
-    def edit_item(self, event=None) -> None:
+    def __edit_item(self, event=None) -> None:
         selected_item = self.tree.focus()
         if selected_item:
             group = self.__repository.get_by_id(int(selected_item))
             modal = ModalWindow(self, title="Edit Card Group", initial_value=group.name)
+            if modal.result is None:
+                return
             old_name = group.name
             group.name = modal.result
-            if not self.validate_cards_group(group):
+            if not self.__validate_cards_group(group):
                 group.name = old_name
                 return
             self.__repository.save()
@@ -88,7 +90,7 @@ class CardGroup(BasePage):
                 iid=group.id,
             )
 
-    def start_learning(self, event=None) -> None:
+    def __start_learning(self, event=None) -> None:
         selected_item = self.tree.focus()
         if selected_item and int(self.tree.item(selected_item, "values")[1]) > 0:
             self.controller.show_studying_page(int(selected_item))
@@ -100,7 +102,7 @@ class CardGroup(BasePage):
             parent=self,
         )
 
-    def show_popup(self, event):
+    def __show_popup(self, event):
         row_id = self.tree.identify_row(event.y)
         if row_id:
             self.tree.focus(row_id)
@@ -111,14 +113,14 @@ class CardGroup(BasePage):
 
             self.popup_menu.post(x, y)
 
-    def show_card_list(self):
+    def __show_card_list(self):
         selected_item = self.tree.focus()
         if selected_item:
             self.controller.show_card_list(
                 self.__repository.get_by_id(int(selected_item))
             )
 
-    def validate_cards_group(self, card_group: CardsGroup) -> bool:
+    def __validate_cards_group(self, card_group: CardsGroup) -> bool:
         errors = CardGroupValidator().validate(card_group)
         if errors is not True:
             ValidatorErrorsHelper.show_errors(errors)

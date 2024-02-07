@@ -12,7 +12,7 @@ from src.Validator.ValidatorErrorsHelper import ValidatorErrorsHelper
 
 class CardList(BasePage):
     __card_repository = CardRepository()
-    group: CardsGroup
+    __group: CardsGroup
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
@@ -28,22 +28,22 @@ class CardList(BasePage):
         self.tree.heading("Back Text", text="Back Text")
         self.tree.pack()
 
-        self.tree.bind("<Button-2>", self.show_popup)
+        self.tree.bind("<Button-2>", self.__show_popup)
 
-        add_button = tk.Button(self, text="Add Card", command=self.add_item)
+        add_button = tk.Button(self, text="Add Card", command=self.__add_item)
         add_button.pack()
 
         self.popup_menu = tk.Menu(self, tearoff=0)
-        self.popup_menu.add_command(label="Edit", command=self.edit_item)
-        self.popup_menu.add_command(label="Delete", command=self.delete_item)
+        self.popup_menu.add_command(label="Edit", command=self.__edit_item)
+        self.popup_menu.add_command(label="Delete", command=self.__delete_item)
 
-    def delete_item(self) -> None:
+    def __delete_item(self) -> None:
         selected_item = self.tree.focus()
         if selected_item:
             self.__card_repository.delete(int(selected_item))
             self.tree.delete(selected_item)
 
-    def add_item(self) -> None:
+    def __add_item(self) -> None:
         modal = CardModalAction(self, title="Add Card")
         if modal.result is None:
             return
@@ -51,9 +51,9 @@ class CardList(BasePage):
             front_text=modal.result["front"],
             back_text=modal.result["back"],
             author=self.controller.get_user(),
-            card_group=self.group,
+            card_group=self.__group,
         )
-        if not self.validate_card(card):
+        if not self.__validate_card(card):
             return
         self.__card_repository.persist(card)
         self.__card_repository.save()
@@ -64,7 +64,7 @@ class CardList(BasePage):
             iid=card.id,
         )
 
-    def edit_item(self, event=None) -> None:
+    def __edit_item(self, event=None) -> None:
         selected_item = self.tree.focus()
         if selected_item:
             card = self.__card_repository.get_by_id(int(selected_item))
@@ -73,11 +73,13 @@ class CardList(BasePage):
                 title="Edit Card",
                 initial_value={"front": card.front_text, "back": card.back_text},
             )
+            if modal.result is None:
+                return
             old_front = card.front_text
             old_back = card.back_text
             card.front_text = modal.result["front"]
             card.back_text = modal.result["back"]
-            if not self.validate_card(card):
+            if not self.__validate_card(card):
                 card.front_text = old_front
                 card.back_text = old_back
                 return
@@ -85,13 +87,13 @@ class CardList(BasePage):
             self.tree.item(selected_item, values=(card.front_text, card.back_text))
 
     def load_data(self, group: CardsGroup, **kwargs) -> None:
-        self.group = group
-        self.load_cards()
+        self.__group = group
+        self.__load_cards()
 
-    def load_cards(self) -> None:
+    def __load_cards(self) -> None:
         for i in self.tree.get_children():
             self.tree.delete(i)
-        for card in self.__card_repository.get_cards_by_group_id(self.group.id):
+        for card in self.__card_repository.get_cards_by_group_id(self.__group.id):
             self.tree.insert(
                 "",
                 tk.END,
@@ -99,7 +101,7 @@ class CardList(BasePage):
                 iid=card.id,
             )
 
-    def show_popup(self, event):
+    def __show_popup(self, event):
         row_id = self.tree.identify_row(event.y)
         if row_id:
             self.tree.focus(row_id)
@@ -110,7 +112,7 @@ class CardList(BasePage):
 
             self.popup_menu.post(x, y)
 
-    def validate_card(self, card: Card) -> bool:
+    def __validate_card(self, card: Card) -> bool:
         errors = CardValidator().validate(card)
         if errors is not True:
             ValidatorErrorsHelper.show_errors(errors)

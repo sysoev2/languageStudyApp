@@ -28,10 +28,10 @@ class AddCard(BasePage):
         self.card_groups = ttk.Combobox(self, state="readonly")
         self.card_groups.pack()
 
-        add_button = tk.Button(self, text="Add Card", command=self.add_item)
+        add_button = tk.Button(self, text="Add Card", command=self.__add_item)
         add_button.pack(side=tk.LEFT, padx=(0, 10))
 
-    def add_item(self) -> None:
+    def __add_item(self) -> None:
         if self.card_groups.current() < 0:
             ValidatorErrorsHelper.show_errors({"Card group": "Please select a group"})
             return
@@ -41,7 +41,7 @@ class AddCard(BasePage):
             author=self.controller.get_user(),
             card_group=self.groups[self.card_groups.current()],
         )
-        if not self.validate_card(card):
+        if not self.__validate_card(card):
             return
         self.__repository.persist(card)
         self.__repository.save()
@@ -60,7 +60,7 @@ class AddCard(BasePage):
         if values:
             self.card_groups.current(0)
 
-    def validate_card(self, card: Card) -> bool:
+    def __validate_card(self, card: Card) -> bool:
         errors = CardValidator().validate(card)
         if errors is not True:
             ValidatorErrorsHelper.show_errors(errors)

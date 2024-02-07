@@ -11,8 +11,8 @@ from src.Enum.CardComplexity import CardComplexity
 
 class StudyingPage(BasePage):
     __repository = CardRepository()
-    cards: list[Card]
-    current_card: Card
+    __cards: list[Card]
+    __current_card: Card
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
@@ -36,7 +36,7 @@ class StudyingPage(BasePage):
         for index, value in enumerate(CardComplexity):
             frame = tk.Frame(self.action_buttons_frame)
             tk.Button(
-                frame, text=value.name, command=lambda v=value.value: self.answer(v)
+                frame, text=value.name, command=lambda v=value.value: self.__answer(v)
             ).pack()
             label = tk.Label(frame)
             self.buttons_labels[value.value] = label
@@ -48,63 +48,61 @@ class StudyingPage(BasePage):
         self.show_answer_frame.grid(row=3, column=0, columnspan=5)
 
         self.show_answer_button = tk.Button(
-            self.show_answer_frame, text="Show Answer", command=self.show_action_buttons
+            self.show_answer_frame,
+            text="Show Answer",
+            command=self.__show_action_buttons,
         )
         self.show_answer_button.pack()
 
         self.action_buttons_frame.grid_remove()
 
-    def answer(self, memory: int):
+    def __answer(self, memory: int):
         sm = SMTwo(
-            self.current_card.ease,
-            (datetime.now() - self.current_card.last_reviewed_at).days,
-            self.current_card.review_count,
+            self.__current_card.ease,
+            (datetime.now() - self.__current_card.last_reviewed_at).days,
+            self.__current_card.review_count,
         ).review(memory)
         if not sm.repetitions:
-            self.cards.insert(0, self.current_card)
-            self.current_card.next_review_after = datetime.now()
+            self.__cards.insert(0, self.__current_card)
+            self.__current_card.next_review_after = datetime.now()
         else:
-            self.current_card.next_review_after = sm.review_date
-        self.current_card.last_reviewed_at = datetime.now()
-        self.current_card.review_count = sm.repetitions
-        self.current_card.ease = sm.easiness
+            self.__current_card.next_review_after = sm.review_date
+        self.__current_card.last_reviewed_at = datetime.now()
+        self.__current_card.review_count = sm.repetitions
+        self.__current_card.ease = sm.easiness
         self.__repository.save()
         self.controller.notify_observers(
             CardAnswerObserver.EVENT_NAME,
-            card=self.current_card,
+            card=self.__current_card,
             answer=int(memory),
             repeat_interval=sm.interval if sm.repetitions else 0,
         )
-        if len(self.cards) == 0:
-            self.end_game()
+        if len(self.__cards) == 0:
+            self.__end_game()
             return
-        self.current_card = self.cards.pop()
-        self.show_card()
+        self.__current_card = self.__cards.pop()
+        self.__show_card()
 
     def load_data(self, group_id: int, **kwargs) -> None:
-        self.cards = self.__repository.get_cards_to_study_by_group_id(group_id)
-        if len(self.cards) == 0:
-            self.end_game()
+        self.__cards = self.__repository.get_cards_to_study_by_group_id(group_id)
+        if len(self.__cards) == 0:
+            self.__end_game()
             return
-        self.current_card = self.cards.pop()
-        self.show_card()
+        self.__current_card = self.__cards.pop()
+        self.__show_card()
 
-    def show_card(self):
-        self.front_text["text"] = self.current_card.front_text
+    def __show_card(self):
+        self.front_text["text"] = self.__current_card.front_text
         self.back_text["text"] = ""
-        self.hide_action_buttons()
+        self.__hide_action_buttons()
 
-    def cards_count_changed(self):
-        if len(self.cards) == 0:
-            self.end_game()
-
-    def end_game(self):
+    def __end_game(self):
         self.controller.show_card_group()
 
-    def show_action_buttons(self):
-        self.back_text["text"] = self.current_card.back_text
+    def __show_action_buttons(self):
+        self.back_text["text"] = self.__current_card.back_text
         for key in self.buttons_labels:
-            next_repetition = self.estimate_next_review_date(self.current_card, key)
+            next_repetition = self.__estimate_next_review_date(self.__current_card, key)
             if next_repetition == 1:
                 self.buttons_labels.get(key)["text"] = str(next_repetition) + " day"
             elif next_repetition > 1:
@@ -114,11 +112,11 @@ class StudyingPage(BasePage):
         self.show_answer_frame.grid_remove()  # Hide 'Show Answer' button frame
         self.action_buttons_frame.grid()  # Show action buttons frame
 
-    def hide_action_buttons(self):
+    def __hide_action_buttons(self):
         self.action_buttons_frame.grid_remove()  # Hide action buttons frame
         self.show_answer_frame.grid()  # Show 'Show
 
-    def estimate_next_review_date(self, card: Card, memory: int) -> int:
+    def __estimate_next_review_date(self, card: Card, memory: int) -> int:
         sm = SMTwo(
             card.ease,
             (datetime.now() - card.last_reviewed_at).days,

@@ -28,7 +28,7 @@ class CardModalAction(tk.Toplevel):
         if not self.initial_focus:
             self.initial_focus = self
 
-        self.protocol("WM_DELETE_WINDOW", self.cancel)  # Handle closing the window
+        self.protocol("WM_DELETE_WINDOW", self.__cancel)  # Handle closing the window
         self.geometry(
             "+%d+%d" % (parent.winfo_rootx() + 50, parent.winfo_rooty() + 50)
         )  # Position the window
@@ -59,25 +59,25 @@ class CardModalAction(tk.Toplevel):
 
         # Create OK and Cancel buttons
         ok_button = tk.Button(
-            box, text="OK", width=10, command=self.ok, default=tk.ACTIVE
+            box, text="OK", width=10, command=self.__ok, default=tk.ACTIVE
         )
-        cancel_button = tk.Button(box, text="Cancel", width=10, command=self.cancel)
+        cancel_button = tk.Button(box, text="Cancel", width=10, command=self.__cancel)
 
         ok_button.pack(side=tk.LEFT, padx=5, pady=5)
         cancel_button.pack(side=tk.LEFT, padx=5, pady=5)
 
-        self.bind("<Return>", self.ok)  # Bind Return key to OK
-        self.bind("<Escape>", self.cancel)  # Bind Escape key to Cancel
+        self.bind("<Return>", self.__ok)  # Bind Return key to OK
+        self.bind("<Escape>", self.__cancel)  # Bind Escape key to Cancel
 
         box.pack()
 
-    def ok(self, event=None):
+    def __ok(self, event=None):
         # Store the front and back text as a result and close the window
         self.result = {"front": self.front_entry.get(), "back": self.back_entry.get()}
         self.parent.focus_set()  # Return focus to the parent window
         self.destroy()  # Close the modal window
 
-    def cancel(self, event=None):
+    def __cancel(self, event=None):
         self.result = None
         self.parent.focus_set()  # Return focus to the parent window
         self.destroy()  # Close the modal window
