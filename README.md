@@ -4,7 +4,7 @@ Krótki opis projektu: Program służy do nauki obcych języków, pomaga rozwią
 
 ## Technologie
 
-- `Python`: Język programowania.
+- `Python 3.11`: Język programowania.
 - `SqlAlchemy`: Biblioteka do mapowania obiektowo-relacyjnego.
 - `Tkinter`: Biblioteka do tworzenia interfejsu użytkownika.
 - `SQLite`: Baza danych.
